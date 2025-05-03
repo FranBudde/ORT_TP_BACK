@@ -1,9 +1,10 @@
-import usuarioService from "../service/usuarioService.js";
+import usuarioService from "../service/userService.js";
 
 const controller = {
-    detail: (req, res) => {
-        const mensajeUser = usuarioService.mensajeUsuario();
-        res.send(mensajeUser);
+    getUsers: async (req, res) => {
+        const users = await usuarioService.getUsers();
+       
+        res.json(users);
     },
     create: (req, res) => {
         res.send('crear usuario');
