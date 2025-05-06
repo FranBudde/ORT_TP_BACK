@@ -24,8 +24,8 @@ const controller = {
           .json({ message: "User retrieved successfully", data: user }); // Usuario encontrado, devuelve la información con un 200 OK
       } else {
         response = res
-          .status(404)
-          .json({ message: "Invalid User or Password" }); // Usuario no encontrado, devuelve un 404 Not Found
+          .status(403)
+          .json({ message: "Forbbiden: Invalid User or Password" }); // Usuario no encontrado, devuelve un 403 Forbbiden
       }
     }
 
