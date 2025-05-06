@@ -1,4 +1,5 @@
 import userService from "../service/userService.js";
+import jwt from 'jsonwebtoken';
 
 const controller = {
   getUsers: async (req, res) => {
@@ -19,9 +20,10 @@ const controller = {
     } else {
       const user = await userService.userAuth(username, password);
       if (user) {
+        const token = jwt.sign({ userId: user._id, username: user.userName }, process.env.JWT_SECRET, { expiresIn: '1h' }); // Guarda tu clave secreta en una variable de entorno
         response = res
           .status(200)
-          .json({ message: "User retrieved successfully", data: user }); // Usuario encontrado, devuelve la información con un 200 OK
+          .json({ message: "User retrieved successfully", token: token }); // Usuario encontrado, devuelve la información con un 200 OK
       } else {
         response = res
           .status(403)
