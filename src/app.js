@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import express from "express";
+import cors from "cors";
 
 import mainRoutes from "./routes/main.js"
 import userRoutes from "./routes/user.js"
@@ -12,6 +13,7 @@ let db;
 
 app.use(express.urlencoded({ extended: false })); // esto nos permite capturar la informacion que se envia por un formulario via POST (req.body)
 app.use(express.json());
+app.use(cors())
 
 
 app.use('/', mainRoutes)
