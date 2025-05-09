@@ -1,5 +1,5 @@
 import userService from "../service/userService.js";
-import jwt from 'jsonwebtoken';
+import jwt from "jsonwebtoken";
 
 const controller = {
   getUsers: async (req, res) => {
@@ -20,18 +20,56 @@ const controller = {
     } else {
       const user = await userService.userAuth(username, password);
       if (user) {
-        const token = jwt.sign({ userId: user._id, username: user.userName }, process.env.JWT_SECRET, { expiresIn: '1h' }); // Guarda tu clave secreta en una variable de entorno
+        const token = jwt.sign(
+          { userId: user._id, username: user.userName },
+          process.env.JWT_SECRET,
+          { expiresIn: "1h" }
+        ); // Guarda tu clave secreta en una variable de entorno
         response = res
           .status(200)
           .json({ message: "User retrieved successfully", token: token }); // Usuario encontrado, devuelve la información con un 200 OK
       } else {
         response = res
           .status(403)
-          .json({ message: "Forbbiden: Invalid User or Password" }); // Usuario no encontrado, devuelve un 403 Forbbiden
+          .json({ message: "Forbidden: Invalid User or Password" }); // Usuario no encontrado, devuelve un 403 Forbbiden
       }
     }
 
     return response;
+  },
+  insertUser: async (req, res) => {
+    const newUser = req.body;
+    const username = newUser["userName"]
+
+    //Cheque si existe el usuario
+    const check_user_exists = await userService.check_user_exists(username);
+
+    let response;
+
+    if (check_user_exists) { //Si existe rompo con 500 error
+      response = res.status(500).json({ message: `Username: ${username} already exists` }); // Usuario encontrado, devuelve un 500
+    } 
+    else {
+      try {
+        const result = await userService.insert_user(newUser);
+        // Pregunto si el insert dio true
+        if (result.acknowledged) {
+          response = res
+            .status(200)
+            .json({ message: `User ${username} inserted successfully` }); // Usuario insertado correctamente, devuelvo 200 OK
+        } else {
+          response = res
+            .status(500)
+            .json({ message: `Could not insert user ${username}` }); 
+        }
+      } catch (error) {
+        response = res
+          .status(500)
+          .json({ message: error });
+      }
+    }
+
+    return response
   },
 };
 

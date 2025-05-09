@@ -2,7 +2,7 @@
 import { getDB } from '../data/connections.js';
 import { ObjectId } from 'mongodb';
 
-const usersCollection = process.env.DB_COLLECTION
+const usersCollection = process.env.DB_USERS_COLLECTION
 
 export async function getUsers() {
     const db = await getDB();
@@ -25,7 +25,38 @@ export async function userAuth(username, password) {
     return user;
   }
 
+export async function check_user_exists(username){
+  const db = await getDB();
+
+  const user = db
+    .collection(`${usersCollection}`)
+    .findOne({ userName: username});
+
+  return user;
+}
+
+export async function insert_user(newUser){
+  const db = await getDB();
+
+  const users_collection = db.collection(`${usersCollection}`)
+
+  try{
+    
+    const result = await users_collection.insertOne(newUser);
+    console.log("respuesta insert: ", result)
+    return result
+
+  } catch(error){
+
+    console.log("Error al insertar el usuario: ", error)
+    throw(error)
+
+  }
+}
+
 export default {
     getUsers,
-    userAuth
+    userAuth,
+    check_user_exists,
+    insert_user
 };
