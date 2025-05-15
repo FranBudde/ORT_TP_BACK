@@ -1,5 +1,5 @@
 import { getDB } from "../data/connections.js";
-import { ObjectId } from "mongodb";
+import bcrypt from "bcrypt";
 
 const usersCollection = process.env.DB_USERS_COLLECTION;
 
@@ -35,6 +35,9 @@ export async function insert_user(newUser) {
   const db = await getDB();
 
   const users_collection = db.collection(`${usersCollection}`);
+  const saltRounds = 10;
+  // Hasheo la contraseña
+  newUser["password"] = await bcrypt.hash(newUser["password"], saltRounds);
 
   try {
     
@@ -44,7 +47,7 @@ export async function insert_user(newUser) {
   }
   catch (error) {
     
-    throw error;
+    throw ("Error al insertar: ", error);
   }
 }
 

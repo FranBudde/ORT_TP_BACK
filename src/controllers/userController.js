@@ -51,6 +51,7 @@ const userController = {
     } 
     else {
       try {
+
         const result = await userService.insert_user(newUser);
         // Pregunto si el insert dio true
         if (result.acknowledged) {
