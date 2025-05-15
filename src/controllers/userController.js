@@ -18,7 +18,7 @@ const userController = {
         .status(400)
         .json({ message: "User or Password cannot be empty" });
     } else {
-      const user = await userService.login(username, password);
+      const user = await userService.get_user_by_credentials(username, password);
       if (user) {
         const token = jwt.sign(
           { userId: user._id, username: user.userName },
@@ -42,7 +42,7 @@ const userController = {
     const username = newUser["userName"]
 
     //Chequeo si existe el usuario
-    const check_user_exists = await userService.check_user_exists(username);
+    const check_user_exists = await userService.get_user_by_username(username);
 
     let response;
 

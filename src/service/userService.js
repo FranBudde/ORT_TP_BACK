@@ -11,7 +11,7 @@ export async function getUsers() {
   return users;
 }
 
-export async function login(username, password) {
+export async function get_user_by_credentials(username, password) {
   const db = await getDB();
 
   const user = db
@@ -21,7 +21,7 @@ export async function login(username, password) {
   return user;
 }
 
-export async function check_user_exists(username) {
+export async function get_user_by_username(username) {
   const db = await getDB();
 
   const user = db
@@ -53,7 +53,7 @@ export async function insert_user(newUser) {
 
 export default {
   getUsers,
-  login,
-  check_user_exists,
+  get_user_by_credentials,
+  get_user_by_username,
   insert_user,
 };
