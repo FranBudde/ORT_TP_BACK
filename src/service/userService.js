@@ -2,6 +2,7 @@ import { getDB } from "../data/connections.js";
 import bcrypt from "bcrypt";
 
 const usersCollection = process.env.DB_USERS_COLLECTION;
+const totalBalances = process.env.DB_BALANCES_COLLECTION
 
 export async function getUsers() {
   const db = await getDB();
@@ -42,7 +43,7 @@ export async function insert_user(newUser) {
   try {
     
     const result = await users_collection.insertOne(newUser);
-    
+    console.log("User inserted successfully...")
     return result;
   }
   catch (error) {
@@ -51,9 +52,32 @@ export async function insert_user(newUser) {
   }
 }
 
+export async function initialize_balance(id_user) {
+  const db = await getDB();
+  const new_balance = {
+    id_user: id_user,
+    amount: 0
+  }
+
+  const total_balances_collection = db.collection(`${totalBalances}`);
+
+  try {
+    
+    const result = await total_balances_collection.insertOne(new_balance);
+    
+    return result;
+  }
+  catch (error) {
+    
+    throw ("Error al insertar el balance: ", error);
+  }
+
+}
+
 export default {
   getUsers,
   get_user_by_credentials,
   get_user_by_username,
   insert_user,
+  initialize_balance
 };

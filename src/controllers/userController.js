@@ -1,4 +1,4 @@
-import userService from "../service/userService.js";
+import userService, { initialize_balance } from "../service/userService.js";
 import jwt from "jsonwebtoken";
 
 const userController = {
@@ -47,22 +47,26 @@ const userController = {
     let response;
 
     if (check_user_exists) { //Si existe rompo con 500 error
-      response = res.status(500).json({ message: `Username: ${username} already exists` }); // Usuario encontrado, devuelve un 500
-    } 
+      return res.status(500).json({ message: `Username: ${username} already exists` }); // Usuario encontrado, devuelve un 500
+    }
     else {
       try {
 
-        const result = await userService.insert_user(newUser);
-        // Pregunto si el insert dio true
-        if (result.acknowledged) {
-          response = res
-            .status(200)
-            .json({ message: `User ${username} inserted successfully` }); // Usuario insertado correctamente, devuelvo 200 OK
-        } else {
-          response = res
-            .status(500)
-            .json({ message: `Could not insert user ${username}` }); 
-        }
+        await userService.insert_user(newUser);
+        
+      } catch (error) {
+        response = res
+          .status(500)
+          .json({ message: error });
+      }
+      try {
+        const user = await userService.get_user_by_username(username);
+        await initialize_balance(user["_id"])
+        response = res
+          .status(200)
+          .json({ message: `User ${username} inserted successfully` }); // Usuario insertado correctamente, devuelvo 200 OK
+
+
       } catch (error) {
         response = res
           .status(500)
