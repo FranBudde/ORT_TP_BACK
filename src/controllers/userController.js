@@ -1,4 +1,4 @@
-import userService, { initialize_balance } from "../service/userService.js";
+import userService, { initialize_balance, update_balance } from "../service/userService.js";
 import jwt from "jsonwebtoken";
 
 const userController = {
@@ -76,6 +76,16 @@ const userController = {
 
     return response
   },
+  updateBalance: async (req, res) => {
+    const { id_user, operacion, monto } = req.body
+
+    try {
+      await update_balance(id_user, operacion, monto)
+      res.status(200).json({message: "Balance updated successfully"})
+    } catch (error) {
+      res.status(500).json({message: "Could not update balance"})
+    }
+  }
 };
 
 export default userController;
