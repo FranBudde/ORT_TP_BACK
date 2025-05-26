@@ -1,4 +1,5 @@
-import userService, { initialize_balance, update_balance } from "../service/userService.js";
+import userService from "../service/userService.js";
+import transactionsService from "../service/transactionsService.js";
 import jwt from "jsonwebtoken";
 
 const userController = {
@@ -18,7 +19,7 @@ const userController = {
         .status(400)
         .json({ message: "User or Password cannot be empty" });
     } else {
-      const user = await userService.get_user_by_credentials(username, password);
+      const user = await userService.get_user_by_credentials(username, password)
       if (user) {
         const token = jwt.sign(
           { userId: user._id, username: user.userName },
@@ -61,9 +62,10 @@ const userController = {
       }
       try {
         const user = await userService.get_user_by_username(username);
-        await initialize_balance(user["_id"])
+        
+        await transactionsService.initialize_balance(user["_id"])
         response = res
-          .status(200)
+          .status(201)
           .json({ message: `User ${username} inserted successfully` }); // Usuario insertado correctamente, devuelvo 200 OK
 
 
@@ -76,11 +78,12 @@ const userController = {
 
     return response
   },
+  
   updateBalance: async (req, res) => {
     const { id_user, operacion, monto } = req.body
 
     try {
-      await update_balance(id_user, operacion, monto)
+      await transactionsService.update_balance(id_user, operacion, monto)
       res.status(200).json({message: "Balance updated successfully"})
     } catch (error) {
       res.status(500).json({message: "Could not update balance"})
