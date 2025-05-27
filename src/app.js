@@ -4,8 +4,7 @@ import cors from "cors";
 
 import mainRoutes from "./routes/main.js"
 import userRoutes from "./routes/user.js"
-import transaccionRoutes from "./routes/transaccion.js"
-
+import transactionsRoutes from "./routes/transactions.js"
 import { getDB, closeDB } from './data/connections.js';
 
 const app = express();
@@ -18,9 +17,22 @@ app.use(express.json());
 app.use(cors())
 
 
-app.use('/', mainRoutes)
-app.use('/user', userRoutes)
-app.use('/transaccion', transaccionRoutes)
+//app.use('/', mainRoutes)
+app.use('/api/user', userRoutes)
+app.use('/api/transactions', transactionsRoutes)
+
+// Ruta base
+app.get("/", (req, res) => {
+  res.json({
+      message: "API Money Manager",
+      endpoints: [
+          { method: "GET", path: "/api/user/get_users", description: "Devuelve todos los usuarios creados en la DB" },
+          { method: "POST", path: "/api/user/login", description: "Login a la app" },
+          { method: "POST", path: "/api/user/insert_user", description: "Inserta un usuario en la tabla de users y crea el balance inicial en la tabla de balances" },
+          { method: "POST", path: "/api/transactions/update_balance", description: "Actualiza el balance total de un usuario" },
+      ]
+  });
+});
 
 const port = process.env.PORT || 3030;
 
