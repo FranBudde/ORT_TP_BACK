@@ -1,6 +1,34 @@
 import transactionsService from "../service/transactionsService.js";
 
 const transactionsController = {
+
+    getTransaccions: async (req, res) => {
+    const transaccions = await getTransaccions();
+
+    res
+      .status(200)
+      .json({ message: "Transaccion retrieved successfully", data: transaccions });
+  },
+
+  createTransaccion: async (req, res) => {
+    try {
+        const body = req.body;
+        const idUser = req.userId;
+        
+        const nuevaTransaccion = await transactionsService.createTransaccion(body, idUser);
+        
+        res.status(201).json({
+            message: "Se creó la transacción exitosamente",
+            data: nuevaTransaccion
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: "Error al crear transacción",
+            error: error.message
+        });
+    }
+  },
+
   updateBalance: async (req, res) => {
     const { id_user, operacion, monto } = req.body
 
@@ -10,7 +38,7 @@ const transactionsController = {
     } catch (error) {
       res.status(500).json({message: "Could not update balance"})
     }
-  }
+  },
 };
 
 export default transactionsController;
