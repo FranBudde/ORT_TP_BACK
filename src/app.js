@@ -4,6 +4,8 @@ import cors from "cors";
 
 import mainRoutes from "./routes/main.js"
 import userRoutes from "./routes/user.js"
+import transaccionRoutes from "./routes/transaccion.js"
+
 import { getDB, closeDB } from './data/connections.js';
 
 const app = express();
@@ -18,6 +20,7 @@ app.use(cors())
 
 app.use('/', mainRoutes)
 app.use('/user', userRoutes)
+app.use('/transaccion', transaccionRoutes)
 
 const port = process.env.PORT || 3030;
 
