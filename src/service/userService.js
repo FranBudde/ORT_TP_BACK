@@ -21,6 +21,10 @@ export async function get_user_by_credentials(username, password) {
     .collection(`${usersCollection}`)
     .findOne({ userName: username });
 
+  if (!user) {
+    return null;
+  }
+
   const isMatch = await bcrypt.compare(password, user.password);
 
   if(!isMatch){
