@@ -31,7 +31,7 @@ app.get("/", (req, res) => {
           { method: "POST", path: "/api/user/insert_user", description: "Inserta un usuario en la tabla de users y crea el balance inicial en la tabla de balances" },
           { method: "POST", path: "/api/transactions/update_balance", description: "Actualiza el balance total de un usuario" },
           { method: "POST", path: "/api/transactions/create_transaccion", description: "Crea una transaccion" },
-          { method: "GET", path: "/api/transactions/get_transaccions", description: "Trae una lista de transacciones" },
+          { method: "POST", path: "/api/transactions/get_transaccions", description: "Trae una lista de transacciones" },
       ]
   });
 });

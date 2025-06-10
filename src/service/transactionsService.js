@@ -101,10 +101,20 @@ export async function initialize_balance(id_user) {
     }
   }
 
+  export async function get_total_balance(id_user) {
+    const db = await getDB();
+ 
+    const total_balance = await db
+        .collection(`${totalBalances}`)
+        .findOne({ id_user: new ObjectId(id_user) })
+  
+    return total_balance["amount"];
+}
+
   export default {
     initialize_balance,
     update_balance,
     getTransaccions,
     createTransaccion,
-
+    get_total_balance
   };
