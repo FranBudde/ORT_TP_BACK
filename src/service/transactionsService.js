@@ -39,27 +39,54 @@ export async function initialize_balance(id_user) {
   export async function createTransaccion(body, idUser) {
       const db = await getDB();
       const session = db.client.startSession();
-      
       try {
           session.startTransaction();
-          
+
+          const parsedAmount = Number(body.amount);
+          if (body.amount === undefined || Number.isNaN(parsedAmount)) {
+            throw new Error(`El campo amount debe ser un número válido. Valor recibido: ${body.amount}`);
+          }
           const transactionData = {
               date: new Date(),
-              id_user: body.id_user,
-              id_categoria: body.categoria,
-              amount: body.amount,
-              comment: body.comment,
+              id_user: new ObjectId(idUser),                   
+              id_categoria: new ObjectId(body.id_categoria), 
+              amount: parsedAmount,
+              comment: body.comment ?? "",
           };
+
+          const catId = transactionData.id_categoria;
+          console.log("🔍 Buscando categoría con _id =", catId.toHexString());
+          const categoria = await db
+              .collection("categories")
+              .findOne(
+                { _id: transactionData.id_categoria },
+                { session }
+            );
+
+          if (!categoria) {
+            throw new Error("La categoría indicada no existe.");
+          }
+
+          const usuario = await db
+              .collection("users")
+              .findOne(
+                { _id: transactionData.id_user },
+                { session }
+              );
+
+          if (!usuario) {
+            throw new Error("El usuario indicado no existe.");
+          }
   
-          update_balance( idUser, "$inc", transactionData.amount)
+          await update_balance( idUser, "$inc", transactionData.amount)
 
           const result = await db.collection(`${transactions}`).insertOne(
               transactionData,
               { session }
           );
-  
+
           await session.commitTransaction();
-          
+
           return {
               _id: result.insertedId,
               ...transactionData
@@ -109,7 +136,11 @@ export async function initialize_balance(id_user) {
         .findOne({ id_user: new ObjectId(id_user) })
   
     return total_balance["amount"];
-}
+  }
+
+  async function validarCategoria() {
+
+  }
 
   export default {
     initialize_balance,
