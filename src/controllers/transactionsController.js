@@ -57,9 +57,6 @@ const transactionsController = {
 
     try {
       const data = await transactionsService.get_transactions_by_user(id_user, date, transac_dsc)
-      if(data.length == 0){
-        res.status(404).json({ message: "Canot find transactions for user" })
-      }
       res.status(200).json({ data: data, message: "Transactions obteined successfully" })
     } catch (error) {
       res.status(500).json({ message: "Could not get transactions" })
