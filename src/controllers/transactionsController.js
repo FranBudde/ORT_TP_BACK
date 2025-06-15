@@ -3,7 +3,7 @@ import transactionsService from "../service/transactionsService.js";
 const transactionsController = {
 
     getTransaccions: async (req, res) => {
-    const transaccions = await getTransaccions();
+    const transaccions = await transactionsService.getTransaccions();
 
     res
       .status(200)
@@ -51,6 +51,27 @@ const transactionsController = {
       res.status(500).json({message: "Could not update balance"})
     }
   },
+   deleteTransaccion: async (req, res) => { 
+        try {
+            const body = req.body;
+            
+            
+            const result = await transactionsService.deleteTransaccions(body);
+            
+            res.status(200).json({
+                message: "Transacción eliminada y balance actualizado exitosamente",
+                data: result
+            });
+        } catch (error) {
+            console.error("Error al eliminar transacción:", error);
+            res.status(error.status || 500).json({ 
+                message: "Error al eliminar transacción",
+                error: error.message
+            });
+        }
+    }
+
 };
+
 
 export default transactionsController;

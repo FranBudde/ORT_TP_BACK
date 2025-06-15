@@ -138,6 +138,46 @@ export async function initialize_balance(id_user) {
     return total_balance["amount"];
   }
 
+  export async function deleteTransaccions(body){
+    const db = await getDB();
+      const session = db.client.startSession();
+      try {
+          session.startTransaction();
+
+          const transactionId =body.id;
+          if (!transactionId){
+            throw new Error("ES necesario el id de la transaccion para eliminarla");
+          }
+
+          const transactionToDelete = await db.collection(`${transactions}`).findOne(
+            {_id: new ObjectId(transactionId)},
+            {session}
+          );
+          if (!transactionToDelete){
+            throw new Error ("La transaccion a eliminar no existe");
+
+          }
+ 
+          await update_balance(transactionToDelete.id_user,"$inc",-transactionToDelete.amount);
+          const result = await db.collection(`${transactions}`).deleteOne(
+            { _id: new ObjectId(transactionId) },
+            { session }
+           );
+          await session.commitTransaction();
+          return {success: true, message: "Transacción eliminada y balance actualizado."}
+      }catch (error){
+        await session.abortTransaction();
+        console.error("Error al eliminar la transacción:", error);
+        throw error;
+      } finally {
+        session.endSession();
+
+      }
+    
+
+    
+  }
+
   async function validarCategoria() {
 
   }
@@ -147,5 +187,6 @@ export async function initialize_balance(id_user) {
     update_balance,
     getTransaccions,
     createTransaccion,
-    get_total_balance
+    get_total_balance,
+    deleteTransaccions
   };
