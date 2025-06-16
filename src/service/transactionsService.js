@@ -80,7 +80,9 @@ export async function createTransaccion(body, idUser) {
       throw new Error("El usuario indicado no existe.");
     }
 
-    await update_balance(idUser, "$inc", transactionData.amount)
+    const finalAmount = body.transac_dsc === 'expenses' ? -(transactionData.amount) : transactionData.amount
+
+    await update_balance(idUser, "$inc", finalAmount)
 
     const result = await db.collection(`${transactions}`).insertOne(
       transactionData,
@@ -186,11 +188,9 @@ export async function get_transactions_by_user(id_user, dateFilterString, transa
     const transaccionesAgrupadas = await db
       .collection(`${transactions}`)
       .aggregate([
-        // Paso 1: Filtrar las transacciones iniciales
         {
           $match: matchQuery
         },
-        // Paso 2: Unir con la colección 'categories'
         {
           $lookup: {
             from: "categories",
@@ -199,24 +199,23 @@ export async function get_transactions_by_user(id_user, dateFilterString, transa
             as: "categoryInfo"
           }
         },
-        // Paso 3: Desplegar el array 'categoryInfo'
-        // Esto es crucial para poder acceder a categoryInfo.name en la etapa $group.
+
         {
           $unwind: "$categoryInfo"
         },
-        // Paso 4: Agrupar por el nombre de la categoría y sumar los montos
+        
         {
           $group: {
-            _id: "$categoryInfo.name", // Agrupa los documentos por el nombre de la categoría
-            totalAmount: { $sum: "$amount" } // Suma el campo 'amount' de cada documento del grupo
+            _id: "$categoryInfo.name", 
+            totalAmount: { $sum: "$amount" }
           }
         },
-        // Paso 5: Proyectar el resultado final en el formato deseado
+        
         {
           $project: {
-            _id: 0,              // Excluye el _id de la etapa de $group (que es el nombre de la categoría)
-            name: "$_id",        // Renombra _id (el nombre de la categoría) a 'name'
-            amount: "$totalAmount" // Renombra totalAmount a 'amount'
+            _id: 0,              
+            name: "$_id",        
+            amount: "$totalAmount"
           }
         }
       ])
