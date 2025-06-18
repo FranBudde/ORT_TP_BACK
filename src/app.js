@@ -32,6 +32,7 @@ app.get("/", (req, res) => {
           { method: "POST", path: "/api/transactions/update_balance", description: "Actualiza el balance total de un usuario" },
           { method: "POST", path: "/api/transactions/create_transaccion", description: "Crea una transaccion" },
           { method: "POST", path: "/api/transactions/get_transaccions", description: "Trae una lista de transacciones" },
+          { method: "POST", path: "/api/transactions/get_transactions_by_user", description: "Trae una lista de transacciones de un usuario en particular" },
           { method: "DELETE", path: "/api/user/delete_user", description: "Elimina el usuario logueado de la DB junto con sus transacciones" },
       ]
   });
