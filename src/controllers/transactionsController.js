@@ -1,4 +1,4 @@
-import transactionsService from "../service/transactionsService.js";
+import transactionsService, { getTransaccions } from "../service/transactionsService.js";
 
 const transactionsController = {
 

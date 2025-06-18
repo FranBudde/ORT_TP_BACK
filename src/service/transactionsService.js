@@ -228,11 +228,25 @@ export async function get_transactions_by_user(id_user, dateFilterString, transa
   }
 }
 
+  export async function delete_transactions_by_user_id(id_user) {
+    const db = await getDB();
+    
+    try {
+      const result = await db.collection(`${transactions}`).deleteMany({ id_user: new ObjectId(id_user) });
+      
+      return result;
+    } catch (error) {
+      console.error("Error al eliminar transacciones del usuario:", error);
+      throw error;
+    }
+  }
+
 export default {
   initialize_balance,
   update_balance,
   getTransaccions,
   createTransaccion,
   get_total_balance,
-  get_transactions_by_user
+  get_transactions_by_user,
+  delete_transactions_by_user_id
 };

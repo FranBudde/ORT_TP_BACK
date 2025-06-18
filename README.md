@@ -67,6 +67,7 @@ Authorization: Bearer <tu_token>
 | GET    | `/api/user/get_users`         | Devuelve todos los usuarios creados en la base de datos |
 | POST   | `/api/user/login`             | Login de usuario, devuelve un JWT |
 | POST   | `/api/user/insert_user`       | Inserta un nuevo usuario y crea su balance inicial |
+| DELETE | `/api/user/delete_user`       | Elimina al usuario de la base de datos junto con sus transacciones |
 
 ---
 
@@ -95,6 +96,7 @@ Authorization: Bearer <tu_token>
     - Santiago Khazki
     - Gabriella Vargas
     - Ian Graus
+    - Rodrigo Alcalde
 
 ---
 
@@ -112,6 +114,18 @@ Authorization: Bearer <tu_token>
 }
 ```
 
+### 🧾 Registro de Usuario
+
+**POST** `/api/user/insert_user`
+
+```json
+{
+  "firstName": "",
+  "lastName": "",
+  "userName": "",
+  "password": ""
+}
+```
 ---
 
 ### 🧾 Crear Transacción
@@ -132,5 +146,3 @@ Authorization: Bearer <tu_token>
 ## 📃 Licencia
 
 ORT Licencia 
-
-

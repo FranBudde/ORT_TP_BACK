@@ -63,11 +63,24 @@ export async function insert_user(newUser) {
   }
 }
 
+export async function delete_user_by_id(userId) {
+  const db = await getDB();
+
+  try {
+    const result = await db.collection(usersCollection).deleteOne({ _id: new ObjectId(userId) });
+
+    return result.deletedCount === 1;
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    throw error;
+  }
+}
 
 
 export default {
   getUsers,
   get_user_by_credentials,
   get_user_by_username,
-  insert_user
+  insert_user,
+  delete_user_by_id
 };
