@@ -78,7 +78,25 @@ const userController = {
 
     return response
   },
-  
+  deleteUser: async (req, res) => {
+    const userId = req.userId;
+
+    try {
+      //Eliminar datos relacionados
+      await transactionsService.delete_transactions_by_user_id(userId);
+
+      //Eliminar el usuario
+      const deletedUser = await userService.delete_user_by_id(userId);
+
+      if (deletedUser) {
+        res.status(200).json({ message: "User account deleted succesfully" });
+      } else {
+        res.status(404).json({ message: "User not found" });
+      }
+    } catch (error) {
+      res.status(500).json({ message: "Failed to delete user", error: error.message || error.toString() });
+    }
+  }
 };
 
 export default userController;
