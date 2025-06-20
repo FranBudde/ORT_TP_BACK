@@ -228,11 +228,95 @@ export async function get_transactions_by_user(id_user, dateFilterString, transa
   }
 }
 
+export async function get_transactions_by_user_category(id_user, category_name, dateFilterString, transac_dsc) {
+  const db = await getDB();
+
+  let matchQuery = { id_user: new ObjectId(id_user) };
+
+  if (transac_dsc !== undefined && transac_dsc !== null) {
+    matchQuery.transac_dsc = transac_dsc;
+  }
+
+  let startDate;
+  let endDate;
+
+  // Lógica para el manejo de fechas
+  if (dateFilterString) {
+    const yearMonthDayRegex = /^\d{4}-\d{2}-\d{2}$/;
+    const yearMonthRegex = /^\d{4}-\d{2}$/;
+    const yearRegex = /^\d{4}$/;
+
+    if (yearMonthDayRegex.test(dateFilterString)) {
+      const [year, month, day] = dateFilterString.split('-').map(Number);
+      startDate = new Date(Date.UTC(year, month - 1, day, 0, 0, 0, 0));
+      endDate = new Date(Date.UTC(year, month - 1, day + 1, 0, 0, 0, 0));
+      console.log(`🔍 Filtrando por día: ${dateFilterString} (Rango UTC: ${startDate.toISOString()} a ${endDate.toISOString()})`);
+    } else if (yearMonthRegex.test(dateFilterString)) {
+      const [year, month] = dateFilterString.split('-').map(Number);
+      startDate = new Date(Date.UTC(year, month - 1, 1, 0, 0, 0, 0));
+      endDate = new Date(Date.UTC(year, month, 1, 0, 0, 0, 0));
+      console.log(`🔍 Filtrando por mes: ${dateFilterString} (Rango UTC: ${startDate.toISOString()} a ${endDate.toISOString()})`);
+    } else if (yearRegex.test(dateFilterString)) {
+      const year = parseInt(dateFilterString);
+      startDate = new Date(Date.UTC(year, 0, 1, 0, 0, 0, 0));
+      endDate = new Date(Date.UTC(year + 1, 0, 1, 0, 0, 0, 0));
+      console.log(`🔍 Filtrando por año: ${dateFilterString} (Rango UTC: ${startDate.toISOString()} a ${endDate.toISOString()})`);
+    } else {
+      throw new Error("Formato de fecha inválido. Se espera 'AAAA', 'AAAA-MM' o 'AAAA-MM-DD'.");
+    }
+
+    if (startDate && endDate) {
+      matchQuery.date = {
+        $gte: startDate,
+        $lt: endDate
+      };
+    }
+  }
+
+  try {
+    const transactionsByCategory = await db
+      .collection(`${transactions}`)
+      .aggregate([
+        {
+          $lookup: {
+            from: "categories",
+            localField: "id_categoria",
+            foreignField: "_id",
+            as: "categoryInfo"
+          }
+        },
+        {
+          $unwind: "$categoryInfo"
+        },
+        {
+          $match: {
+            ...matchQuery, 
+            "categoryInfo.name": category_name
+          }
+        },
+        {
+          $project: {
+            _id: 0,
+            name: "$categoryInfo.name",
+            amount: "$amount"
+          }
+        }
+      ])
+      .toArray();
+
+    return transactionsByCategory;
+  } catch (error) {
+    console.error("Error al obtener transacciones por usuario, categoría, fecha y tipo de transacción:", error);
+    throw error;
+  }
+}
+
 export default {
   initialize_balance,
   update_balance,
   getTransaccions,
   createTransaccion,
   get_total_balance,
-  get_transactions_by_user
+  get_transactions_by_user,
+  get_transactions_by_user_category
 };

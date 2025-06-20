@@ -62,6 +62,16 @@ const transactionsController = {
       res.status(500).json({ message: "Could not get transactions" })
     }
   },
+  getTransactionsByUserCategory: async (req, res) => {
+    const { id_user, category_name, date, transac_dsc } = req.body
+
+    try {
+      const data = await transactionsService.get_transactions_by_user_category(id_user, category_name, date, transac_dsc)
+      res.status(200).json({ data: data, message: "Transactions obteined successfully" })
+    } catch (error) {
+      res.status(500).json({ message: "Could not get transactions" })
+    }
+  },
 
 
 };
