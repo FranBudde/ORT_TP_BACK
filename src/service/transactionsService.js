@@ -34,9 +34,6 @@ export async function createTransaccion(body, idUser) {
   try {
     session.startTransaction();
 
-    console.log("📥 Body recibido:", body);
-    console.log("📅 Fecha recibida:", body.date);
-    console.log("🧭 Fecha convertida con new Date():", new Date(body.date));
     const parsedAmount = Number(body.amount);
     if (body.amount === undefined || Number.isNaN(parsedAmount)) {
       throw new Error(
