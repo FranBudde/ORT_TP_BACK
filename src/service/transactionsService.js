@@ -318,6 +318,7 @@ export async function get_transactions_by_user_category(
           $project: {
             _id: 0,
             name: "$categoryInfo.name",
+            comment: "$comment",
             amount: "$amount",
           },
         },

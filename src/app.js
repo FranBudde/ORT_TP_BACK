@@ -64,6 +64,18 @@ app.get("/", (req, res) => {
         description:
           "Trae una lista de transacciones de un usuario en particular",
       },
+      {
+        method: "POST",
+        path: "/api/transactions/get_transactions_by_user_category",
+        description:
+          "Trae una lista de transacciones de un usuario en particular para una categoria en particular",
+      },
+      {
+        method: "GET",
+        path: "/api/categories/get_by_name",
+        description:
+          "Dado el nombre, trae el ID de una categoria",
+      },
     ],
   });
 });
