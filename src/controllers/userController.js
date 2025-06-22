@@ -19,7 +19,10 @@ const userController = {
         .status(400)
         .json({ message: "User or Password cannot be empty" });
     } else {
-      const user = await userService.get_user_by_credentials(username, password)
+      const user = await userService.get_user_by_credentials(
+        username,
+        password
+      );
       if (user) {
         const token = jwt.sign(
           { userId: user._id, username: user.userName },
@@ -40,45 +43,38 @@ const userController = {
   },
   insertUser: async (req, res) => {
     const newUser = req.body;
-    const username = newUser["userName"]
+    const username = newUser["userName"];
 
     //Chequeo si existe el usuario
     const check_user_exists = await userService.get_user_by_username(username);
 
     let response;
 
-    if (check_user_exists) { //Si existe rompo con 500 error
-      return res.status(500).json({ message: `Username: ${username} already exists` }); // Usuario encontrado, devuelve un 500
-    }
-    else {
+    if (check_user_exists) {
+      //Si existe rompo con 500 error
+      return res
+        .status(409)
+        .json({ message: `Username: ${username} already exists` }); // Usuario encontrado, devuelve un 500
+    } else {
       try {
-
         await userService.insert_user(newUser);
-        
       } catch (error) {
-        response = res
-          .status(500)
-          .json({ message: error });
+        response = res.status(500).json({ message: error });
       }
       try {
         const user = await userService.get_user_by_username(username);
-        
-        await transactionsService.initialize_balance(user["_id"])
+
+        await transactionsService.initialize_balance(user["_id"]);
         response = res
           .status(201)
           .json({ message: `User ${username} inserted successfully` }); // Usuario insertado correctamente, devuelvo 200 OK
-
-
       } catch (error) {
-        response = res
-          .status(500)
-          .json({ message: error });
+        response = res.status(500).json({ message: error });
       }
     }
 
-    return response
+    return response;
   },
-  
 };
 
 export default userController;
