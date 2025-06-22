@@ -30,7 +30,7 @@ const transactionsController = {
   },
 
   getTotalBalance: async (req, res) => {
-    const { id_user } = req.body
+    const id_user = req.userId;
 
     try {
       const data = await transactionsService.get_total_balance(id_user)
@@ -42,7 +42,8 @@ const transactionsController = {
 
 
   updateBalance: async (req, res) => {
-    const { id_user, operacion, monto } = req.body
+    const { operacion, monto } = req.body
+    const id_user = req.userId;
 
     try {
       await transactionsService.update_balance(id_user, operacion, monto)
@@ -53,7 +54,8 @@ const transactionsController = {
   },
 
   getTransactionsByUser: async (req, res) => {
-    const { id_user, date, transac_dsc } = req.body
+    const { date, transac_dsc } = req.body
+    const id_user = req.userId;
 
     try {
       const data = await transactionsService.get_transactions_by_user(id_user, date, transac_dsc)
@@ -63,13 +65,24 @@ const transactionsController = {
     }
   },
   getTransactionsByUserCategory: async (req, res) => {
-    const { id_user, category_name, date, transac_dsc } = req.body
+    const { category_name, date, transac_dsc } = req.body
+    const id_user = req.userId;
 
     try {
       const data = await transactionsService.get_transactions_by_user_category(id_user, category_name, date, transac_dsc)
       res.status(200).json({ data: data, message: "Transactions obteined successfully" })
     } catch (error) {
       res.status(500).json({ message: "Could not get transactions" })
+    }
+  },
+  deleteTransaction: async (req, res) => {
+    const { id_transaction} = req.body
+
+    try {
+      const data = await transactionsService.delete_transaction(id_transaction)
+      res.status(200).json({ data: data, message: "Transaction deleted successfully" })
+    } catch (error) {
+      res.status(500).json({ message: "Could not delete transaction" })
     }
   },
 

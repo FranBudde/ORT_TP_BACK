@@ -316,7 +316,7 @@ export async function get_transactions_by_user_category(
         },
         {
           $project: {
-            _id: 0,
+            _id: 1,
             name: "$categoryInfo.name",
             comment: "$comment",
             amount: "$amount",
@@ -334,6 +334,17 @@ export async function get_transactions_by_user_category(
     throw error;
   }
 }
+export async function delete_transaction(id_transaction) {
+  const db = await getDB();
+
+  const transactionsCollection = db.collection(`${transactions}`);
+
+  try {
+    await transactionsCollection.deleteOne({ _id: new ObjectId(id_transaction) });
+  } catch (error) {
+    throw ("Error al borrar la transaccion: ", error);
+  }
+}
 
 export default {
   initialize_balance,
@@ -343,4 +354,5 @@ export default {
   get_total_balance,
   get_transactions_by_user,
   get_transactions_by_user_category,
+  delete_transaction
 };
