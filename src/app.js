@@ -71,11 +71,17 @@ app.get("/", (req, res) => {
           "Trae una lista de transacciones de un usuario en particular para una categoria en particular",
       },
       {
+        method: "DELETE",
+        path: "/api/transactions/delete_transaction",
+        description:
+          "Dado el ID de una trx, la borra",
+      },
+      {
         method: "GET",
         path: "/api/categories/get_by_name",
         description:
           "Dado el nombre, trae el ID de una categoria",
-      },
+      }
     ],
   });
 });
